@@ -1,4 +1,7 @@
-#lang planet neil/sicp
+;; #lang planet neil/sicp
+
+(define (runtime) (tms:clock (times)))
+
 (define (square n)
   (* n n))
 
@@ -18,9 +21,9 @@
   (try-it (+ 1 (random (- n 1)))))
 
 (define (fast-prime? n times)
-  (cond ((= 0 times) true)
-        ((fermat-test n) (fast-prime? n (- 1 times)))
-        (else false)))
+  (cond ((= 0 times) #t)
+        ((fermat-test n) (fast-prime? n (- times 1)))
+        (else #f)))
 
 (define (print-prime-time n es-time)
   (display n)
@@ -31,7 +34,7 @@
 (define (check-print-prime n start-time)
   (if (fast-prime? n 2)
       (print-prime-time n (- (runtime) start-time))
-      false))
+      #f))
 
 (define (iter-check-prime n count)
   (cond ((= count 0) n)
