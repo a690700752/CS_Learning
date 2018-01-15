@@ -1,6 +1,4 @@
-;; #lang planet neil/sicp
-
-(define (runtime) (tms:clock (times)))
+#lang planet neil/sicp
 
 (define (square n)
   (* n n))

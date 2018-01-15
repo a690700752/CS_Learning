@@ -1,19 +1,15 @@
-;; #lang planet neil/sicp
-
-(define (runtime) (tms:clock (times)))
+#lang planet neil/sicp
 
 (define (square n)
   (* n n))
 
-(define (expt base e)
-  (cond ((= e 0) 1)
-        ((even? e) (expt (square base)
-                        (/ e 2)))
-        (else (* (expt base (- e 1))
-                 base))))
-
 (define (expmod base e m)
-  (remainder (expt base e) m))
+  (cond ((= e 0) 1)
+        ((even? e)
+         (remainder (square (expmod base (/ e 2) m))
+                    m))
+        (else (remainder (* base (expmod base (- e 1) m))
+              m))))
 
 (define (fermat-test n)
   (define (try-it rand)
