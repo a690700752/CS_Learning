@@ -113,14 +113,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "hello_rust"
-version = "0.1.0"
-dependencies = [
- "image 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "num 0.1.42 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
 name = "image"
 version = "0.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -169,6 +161,14 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "lzw"
 version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "mandelbrot_set"
+version = "0.1.0"
+dependencies = [
+ "image 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "num 0.1.42 (registry+https://github.com/rust-lang/crates.io-index)",
+]
 
 [[package]]
 name = "memoffset"
