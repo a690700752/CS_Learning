@@ -1,3 +1,4 @@
+extern crate crossbeam;
 extern crate image;
 extern crate num;
 
@@ -80,10 +81,7 @@ fn test_pixel_to_complex() {
             Complex { re: 0.0, im: 200.0 },
             Complex { re: 200.0, im: 0.0 },
         ),
-        Complex {
-            re: 50.0,
-            im: 50.0,
-        }
+        Complex { re: 50.0, im: 50.0 }
     )
 }
 
@@ -123,16 +121,45 @@ fn main() {
     let args: Vec<String> = std::env::args().collect();
 
     if args.len() != 5 {
-        writeln!(std::io::stderr(), "Usage: mandelbrot_set FILENAME SIZE UPPER_LEFT LOWER_RIGHT").unwrap();
-        writeln!(std::io::stderr(), "example: {} image.png 512x512 0,1000 1000,0", args[0]).unwrap();
+        writeln!(
+            std::io::stderr(),
+            "Usage: mandelbrot_set FILENAME SIZE UPPER_LEFT LOWER_RIGHT"
+        ).unwrap();
+        writeln!(
+            std::io::stderr(),
+            "example: {} image.png 512x512 0,1000 1000,0",
+            args[0]
+        ).unwrap();
         std::process::exit(-1);
     }
 
     let bounds = parse_pair(&args[2], 'x').unwrap();
     let upper_left = parse_complex(&args[3]).unwrap();
     let lower_right = parse_complex(&args[4]).unwrap();
-    let mut canvas = vec![0u8; bounds.0 * bounds.1];
+    let mut canvas: Vec<_> = vec![0u8; bounds.0 * bounds.1];
 
-    render(&mut canvas, bounds, upper_left, lower_right);
+    let threads = 8;
+    let row_per_thread = bounds.1 / threads + 1;
+    {
+        let chunks: Vec<_> = canvas.chunks_mut(row_per_thread * bounds.0).collect();
+        crossbeam::scope(|spawner| {
+            for (index, chunk) in chunks.into_iter().enumerate() {
+                let top = index * row_per_thread;
+                let height = chunk.len() / bounds.0;
+                let chunk_upper_left =
+                    pixel_to_complex(bounds, (0, top), upper_left, lower_right);
+                let chunk_lower_right = pixel_to_complex(
+                    bounds,
+                    (bounds.0, top + height),
+                    upper_left,
+                    lower_right,
+                );
+                spawner.spawn(move || {
+                    render(chunk, (bounds.0, height), chunk_upper_left, chunk_lower_right);
+                });
+            }
+        })
+    }
+
     save_image(&args[1], &canvas, bounds).unwrap();
 }
