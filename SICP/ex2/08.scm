@@ -13,3 +13,6 @@
                     (upper-bound i2))
                  (- (upper-bound i1)
                     (lower-bound i2))))
+
+(sub-interval (make-interval 1 2) 
+              (make-interval 2 3))
