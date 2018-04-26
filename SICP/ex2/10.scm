@@ -26,22 +26,21 @@
    (make-interval (min p1 p2 p3 p4) 
                   (max p1 p2 p3 p4))))
 
+(define (div-interval x y)
+  (if (<= (* (lower-bound y) (upper-bound y)) 0)
+      (error "Error div, span zero." y)
+      (mul-interval x 
+                    (make-interval (/ 1.0 (upper-bound y))
+                                   (/ 1.0 (lower-bound y))))))
+
 (define (width-interval i1) 
   (/ (- (upper-bound i1) (lower-bound i1)) 2.0))
 
-;; add
-(define i (make-interval 2 6))
-(define j (make-interval 3 10))
+(define i (make-interval 2 7))
+(define j (make-interval 3 8))
 
-(+ (width-interval i)
-   (width-interval j))
+(div-interval i j)
 
-(width-interval (add-interval i j))
-
-;; mul
-(define i1 (make-interval 2 6))
-(define i2 (make-interval 3 10))
-(* (width-interval i1)
-   (width-interval i2))
-
-(width-interval (mul-interval i1 i2))
+(define i1 (make-interval 2 7))
+(define i2 (make-interval -2 9))
+(div-interval i1 i2)
